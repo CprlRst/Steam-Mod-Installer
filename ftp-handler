@@ -1,0 +1,98 @@
+<?php
+header('Content-Type: application/json');
+
+
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
+try {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Invalid request method');
+    }
+
+    if (!isset($_POST['host']) || !isset($_POST['username']) || !isset($_POST['password'])) {
+        throw new Exception('Missing required parameters');
+    }
+
+    $host = $_POST['host'];
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $path = $_POST['path'] ?? '/Sandbox_config.sbc';
+    $type = $_POST['type'] ?? 'ftp';
+
+    if (isset($_POST['action']) && $_POST['action'] === 'update') {
+        if (!isset($_POST['content'])) {
+            throw new Exception('Missing content for update');
+        }
+
+        $content = $_POST['content'];
+
+        if ($type === 'sftp') {
+            if (!function_exists('ssh2_connect')) {
+                throw new Exception('SFTP support not enabled on server');
+            }
+
+            $connection = ssh2_connect($host, 22);
+            if (!$connection) {
+                throw new Exception('Could not connect to SFTP server');
+            }
+
+            if (!ssh2_auth_password($connection, $username, $password)) {
+                throw new Exception('SFTP authentication failed');
+            }
+
+            $sftp = ssh2_sftp($connection);
+            $stream = fopen("ssh2.sftp://$sftp$path", 'w');
+            if (!$stream) {
+                throw new Exception('Failed to open SFTP stream');
+            }
+
+            fwrite($stream, $content);
+            fclose($stream);
+
+            $stream = fopen("ssh2.sftp://$sftp$path", 'r');
+            $updatedContent = stream_get_contents($stream);
+            fclose($stream);
+        } else {
+            $conn = @ftp_connect($host);
+            if (!$conn) {
+                throw new Exception('Could not connect to FTP server');
+            }
+
+            if (!@ftp_login($conn, $username, $password)) {
+                throw new Exception('FTP authentication failed');
+            }
+
+            ftp_pasv($conn, true);
+
+            $tempFile = tempnam(sys_get_temp_dir(), 'config');
+            file_put_contents($tempFile, $content);
+
+            if (!@ftp_put($conn, $path, $tempFile, FTP_BINARY)) {
+                throw new Exception('Failed to upload file');
+            }
+
+            if (!@ftp_get($conn, $tempFile, $path, FTP_BINARY)) {
+                throw new Exception('Failed to retrieve updated file');
+            }
+
+            $updatedContent = file_get_contents($tempFile);
+            unlink($tempFile);
+            ftp_close($conn);
+        }
+
+        echo json_encode([
+            'success' => true,
+            'data' => $updatedContent
+        ]);
+    } else {
+        throw new Exception('Invalid action specified');
+    }
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
+}
+?>

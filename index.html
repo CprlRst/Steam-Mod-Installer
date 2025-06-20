@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steam Mod Installer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Steam Mod Installer</h1>
+    </header>
+
+    <main>
+        <section id="config-handler">
+            <div class="tab-controls">
+                <button class="tab-btn active" data-tab="local">Local File</button>
+                <button class="tab-btn" data-tab="ftp">FTP Connection</button>
+            </div>
+            
+            <div class="tab-content" id="local-tab">
+                <div class="file-upload-container">
+                    <h3>Select Sandbox Configuration File</h3>
+                    <p class="upload-info">Choose your Sandbox_config.sbc file to view installed mods</p>
+                    <input type="file" id="config-upload" accept=".sbc">
+                </div>
+            </div>
+            
+            <div class="tab-content" id="ftp-tab" style="display: none;">
+                <form id="ftp-form">
+                    <h3>FTP Connection Details</h3>
+                    <p class="upload-info">Connect to your server to manage mods</p>
+                    
+                    <select name="type" required>
+                        <option value="ftp">FTP</option>
+                        <option value="ftps">FTPS</option>
+                    </select>
+
+                    <input type="text" name="host" 
+                           placeholder="FTP Host" 
+                           autocomplete="url" required>
+
+                    <input type="number" name="port" 
+                           placeholder="Port (optional)">
+
+                    <input type="text" name="username" 
+                           placeholder="Username" 
+                           autocomplete="username" required>
+
+                    <input type="password" name="password" 
+                           placeholder="Password" 
+                           autocomplete="current-password" required>
+
+                    <input type="text" name="path" 
+                           placeholder="Path to config file" 
+                           value="/Sandbox_config.sbc" required>
+
+                    <button type="submit">Connect to Server</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="workshop-section">
+            <div class="filter-controls">
+                <div class="search-container">
+                    <input type="text" id="workshop-search-input" placeholder="Search mods...">
+                </div>
+                
+                <select id="sort-select" class="filter-select">
+                    <option value="totaluniquesubscribers">Most Popular</option>
+                    <option value="trend">Trending</option>
+                    <option value="mostrecent">Most Recent</option>
+                    <option value="lastupdated">Last Updated</option>
+                </select>
+
+                <button class="clear-filters-btn">Clear Filters</button>
+            </div>
+
+            <div class="workshop-container">
+                <div class="mod-results">
+                    <div class="mod-grid">
+                        <!-- Workshop items will be dynamically inserted here -->
+                    </div>
+                </div>
+                <div class="filter-sidebar">
+                    <div class="filter-section">
+                        <h4>Type</h4>
+                        <select id="type-select">
+                            <option value="">All Types</option>
+                            <option value="World">World</option>
+                            <option value="Mod">Mod</option>
+                            <option value="Blueprint">Blueprint</option>
+                            <option value="IngameScript">Ingame Script</option>
+                            <option value="Scenario">Scenario</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-section">
+                        <h4>Categories</h4>
+                        <div class="filter-options">
+                            <label><input type="checkbox" name="category" value="Block"> Block</label>
+                            <label><input type="checkbox" name="category" value="Exploration"> Exploration</label>
+                            <label><input type="checkbox" name="category" value="Respawn+Ship"> Respawn Ship</label>
+                            <label><input type="checkbox" name="category" value="Script"> Script</label>
+                            <label><input type="checkbox" name="category" value="Modpack"> Modpack</label>
+                            <label><input type="checkbox" name="category" value="Skybox"> Skybox</label>
+                            <label><input type="checkbox" name="category" value="Character"> Character</label>
+                            <label><input type="checkbox" name="category" value="Animation"> Animation</label>
+                            <label><input type="checkbox" name="category" value="Asteroid"> Asteroid</label>
+                            <label><input type="checkbox" name="category" value="Planet"> Planet</label>
+                            <label><input type="checkbox" name="category" value="Production"> Production</label>
+                            <label><input type="checkbox" name="category" value="Experimental"> Experimental</label>
+                            <label><input type="checkbox" name="category" value="NPC"> NPC</label>
+                            <label><input type="checkbox" name="category" value="Other"> Other</label>
+                            <label><input type="checkbox" name="category" value="Campaign"> Campaign</label>
+                            <label><input type="checkbox" name="category" value="Font"> Font</label>
+                            <label><input type="checkbox" name="category" value="Obsolete"> Obsolete</label>
+                            <label><input type="checkbox" name="category" value="No+Mods"> No Mods</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Steam Mod Installer</p>
+    </footer>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
